@@ -1,0 +1,283 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Studio Pro v2</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#050816;
+overflow:hidden;
+position:relative;
+padding:20px;
+}
+
+body::before{
+content:"";
+position:absolute;
+width:700px;
+height:700px;
+background:radial-gradient(circle,#00f5ff55,transparent 70%);
+top:-250px;
+left:-250px;
+animation:move1 12s infinite alternate;
+}
+
+body::after{
+content:"";
+position:absolute;
+width:700px;
+height:700px;
+background:radial-gradient(circle,#ff00ea55,transparent 70%);
+bottom:-250px;
+right:-250px;
+animation:move2 12s infinite alternate;
+}
+
+@keyframes move1{
+to{transform:translate(200px,120px);}
+}
+
+@keyframes move2{
+to{transform:translate(-200px,-120px);}
+}
+
+.particle{
+position:absolute;
+border-radius:50%;
+background:white;
+opacity:.15;
+animation:float 10s linear infinite;
+}
+
+@keyframes float{
+from{transform:translateY(100vh);}
+to{transform:translateY(-100px);}
+}
+
+.card{
+width:100%;
+max-width:520px;
+padding:35px;
+border-radius:30px;
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,.12);
+box-shadow:0 20px 60px rgba(0,0,0,.4);
+position:relative;
+z-index:2;
+}
+
+h1{
+color:#fff;
+text-align:center;
+margin-bottom:10px;
+}
+
+.subtitle{
+text-align:center;
+color:#cbd5e1;
+margin-bottom:25px;
+}
+
+input{
+width:100%;
+padding:16px;
+border:none;
+outline:none;
+border-radius:16px;
+background:rgba(255,255,255,.08);
+color:white;
+font-size:16px;
+margin-bottom:15px;
+}
+
+input::placeholder{
+color:#94a3b8;
+}
+
+.btn{
+width:100%;
+padding:15px;
+border:none;
+border-radius:16px;
+cursor:pointer;
+font-size:15px;
+font-weight:600;
+color:white;
+margin-top:10px;
+transition:.3s;
+}
+
+.generate{
+background:linear-gradient(135deg,#00f5ff,#7c3aed,#ff00ea);
+background-size:300% 300%;
+animation:gradient 6s ease infinite;
+}
+
+.download{
+background:linear-gradient(135deg,#22c55e,#16a34a);
+display:none;
+}
+
+.clear{
+background:linear-gradient(135deg,#ef4444,#dc2626);
+}
+
+.btn:hover{
+transform:translateY(-3px);
+}
+
+@keyframes gradient{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.qr-container{
+display:flex;
+justify-content:center;
+margin-top:25px;
+}
+
+#qrImage{
+display:none;
+background:white;
+padding:15px;
+border-radius:25px;
+max-width:280px;
+width:100%;
+box-shadow:
+0 0 25px #00f5ff,
+0 0 60px rgba(0,245,255,.4);
+}
+
+.footer{
+text-align:center;
+margin-top:20px;
+font-size:13px;
+color:#94a3b8;
+}
+</style>
+</head>
+<body>
+
+<script>
+for(let i=0;i<25;i++){
+let p=document.createElement("div");
+p.className="particle";
+p.style.width=Math.random()*6+2+"px";
+p.style.height=p.style.width;
+p.style.left=Math.random()*100+"%";
+p.style.animationDuration=(Math.random()*10+8)+"s";
+document.body.appendChild(p);
+}
+</script>
+
+<div class="card">
+
+<h1>⚡ QR Studio Pro v2</h1>
+
+<p class="subtitle">
+Auto Generate QR Codes While Typing
+</p>
+
+<input
+type="text"
+id="text"
+placeholder="Enter URL, Text, Email, Phone..."
+>
+
+<button class="btn generate" onclick="generateQR()">
+Generate QR
+</button>
+
+<div class="qr-container">
+<img id="qrImage">
+</div>
+
+<button id="downloadBtn" class="btn download">
+Download QR
+</button>
+
+<button class="btn clear" onclick="clearQR()">
+Clear
+</button>
+
+<div class="footer">
+💎 Premium Single File QR Generator
+</div>
+
+</div>
+
+<script>
+
+const qrImage=document.getElementById("qrImage");
+const downloadBtn=document.getElementById("downloadBtn");
+const textInput=document.getElementById("text");
+
+function generateQR(){
+
+const text=textInput.value.trim();
+
+if(!text){
+qrImage.style.display="none";
+downloadBtn.style.display="none";
+return;
+}
+
+qrImage.src=
+"https://api.qrserver.com/v1/create-qr-code/?size=500x500&data="
++encodeURIComponent(text);
+
+qrImage.onload=()=>{
+qrImage.style.display="block";
+downloadBtn.style.display="block";
+};
+}
+
+textInput.addEventListener("input",generateQR);
+
+downloadBtn.addEventListener("click",()=>{
+
+const a=document.createElement("a");
+a.href=qrImage.src;
+a.download="QR-Studio-Pro.png";
+a.click();
+
+});
+
+function clearQR(){
+
+textInput.value="";
+qrImage.style.display="none";
+downloadBtn.style.display="none";
+
+}
+
+textInput.addEventListener("keypress",(e)=>{
+if(e.key==="Enter"){
+generateQR();
+}
+});
+
+</script>
+
+</body>
+</html>
+```
